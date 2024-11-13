@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from pytorch3dunet.datasets.hdf5 import AbstractHDF5Dataset
 from pytorch3dunet.datasets.utils import SliceBuilder, remove_padding
+from pytorch3dunet.datasets.vgdata import VGDataset
 from pytorch3dunet.unet3d.model import UNet2D
 from pytorch3dunet.unet3d.utils import get_logger
 
@@ -83,7 +84,9 @@ class StandardPredictor(_AbstractPredictor):
                          **kwargs)
 
     def __call__(self, test_loader):
-        assert isinstance(test_loader.dataset, AbstractHDF5Dataset)
+        assert isinstance(test_loader.dataset, AbstractHDF5Dataset) or isinstance(
+            test_loader.dataset, VGDataset
+        )
         logger.info(f"Processing '{test_loader.dataset.file_path}'...")
         start = time.perf_counter()
 
