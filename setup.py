@@ -11,6 +11,7 @@ setup(
     python_requires='>=3.9',
     entry_points={'console_scripts': [
         'train3dunet=pytorch3dunet.train:main',
-        'predict3dunet=pytorch3dunet.predict:main']
+        'predict3dunet=pytorch3dunet.predict:main',
+        'export3dunet=pytorch3dunet.export:main']
         }
 )
