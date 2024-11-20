@@ -84,9 +84,7 @@ class StandardPredictor(_AbstractPredictor):
                          **kwargs)
 
     def __call__(self, test_loader):
-        assert isinstance(test_loader.dataset, AbstractHDF5Dataset) or isinstance(
-            test_loader.dataset, VGDataset
-        )
+        assert isinstance(test_loader.dataset, (AbstractHDF5Dataset, VGDataset))
         logger.info(f"Processing '{test_loader.dataset.file_path}'...")
         start = time.perf_counter()
 
