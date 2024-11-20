@@ -23,6 +23,16 @@ Just make sure to keep the singleton z-dimension in your H5 dataset (i.e. `(1, Y
 The 2D U-Net itself uses the standard 2D convolutional layers instead of 3D convolutions with kernel size `(1, 3, 3)` for performance reasons.
 
 ## Input Data Format
+
+### Generating Training Data using Hexagon VGSTUDIO MAX
+1. Label your data using the segmentation tools provided in Hexagon VGSTUDIO MAX
+![Rendering of segmented data](resources/3d_segmentation.png)
+2. Export the labeled data for deep learning via the scene tree
+![Export via scene tree](resources/Export_deep_learning_data.png)
+3. Select all Regions of Interest (ROIs) to be used as labeled data
+![Select ROIs for labeling](resources/Export_deep_learning_data_2.png)
+
+### HDF5 data
 The input data should be stored in HDF5 files. The HDF5 files for training should contain two datasets: `raw` and `label`. Optionally, when training with `PixelWiseCrossEntropyLoss` one should provide `weight` dataset.
 The `raw` dataset should contain the input data, while the `label` dataset the ground truth labels. The optional `weight` dataset should contain the values for weighting the loss function in different regions of the input and should be of the same size as `label` dataset.
 The format of the `raw`/`label` datasets depends on whether the problem is 2D or 3D and whether the data is single-channel or multi-channel, see the table below:
@@ -66,9 +76,10 @@ train3dunet --config <CONFIG>
 ```
 where `CONFIG` is the path to a YAML configuration file, which specifies all aspects of the training procedure. 
 
-In order to train on your own data just provide the paths to your HDF5 training and validation datasets in the config.
+In order to train on your own data just provide the paths to your HDF5 or Hexagon VGSTUDIO MAX training and validation datasets in the config.
 
 * sample config for 3D semantic segmentation (cell boundary segmentation): [train_config_segmentation.yaml](resources/3DUnet_confocal_boundary/train_config.yml)
+* sample config for 3D semantic segmentation on data exported by Hexagon VGSTUDIO MAX: [train_config_segmentation.yaml](resources/3DResnet_segmentation_data/train_config.yml)
 * sample config for 3D regression task (denoising): [train_config_regression.yaml](resources/3DUnet_denoising/train_config_regression.yaml)
 * more configs can be found in [resources](resources) directory
 
@@ -94,6 +105,15 @@ In order to predict on your own data, just provide the path to your model as wel
 1. If you're running prediction for a large dataset, consider using `LazyHDF5Dataset` and `LazyPredictor` in the config. This will save memory by loading data on the fly at the cost of slower prediction time. See [test_config_lazy](resources/3DUnet_confocal_boundary/test_config_lazy.yml) for an example config.
 2. If your model predicts multiple classes (see e.g. [train_config_multiclass](resources/3DUnet_multiclass/train_config.yaml)), consider saving only the final segmentation instead of the probability maps which can be time and space consuming.
    To do so, set `save_segmentation: true` in the `predictor` section of the config (see [test_config_multiclass](resources/3DUnet_multiclass/test_config.yaml)).
+
+## Exporting Model
+To use the trained model in other applications, it can be exported via:
+```
+export3dunet --config <CONFIG>
+```
+
+### Exporting for Hexagon VGSTUDIO MAX
+The model is exported as an ONNX model in the output directory. Additionally, a `.info.json` file is created, which is used by Hexagon VGSTUDIO MAX to import and optimize the model for the given hardware.
 
 ## Data Parallelism
 By default, if multiple GPUs are available training/prediction will be run on all the GPUs using [DataParallel](https://pytorch.org/tutorials/beginner/blitz/data_parallel_tutorial.html).
