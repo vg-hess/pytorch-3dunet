@@ -11,6 +11,7 @@ dependencies:
   - tqdm
   - setuptools
   - h5py
+  - onnx
   - scipy
   - scikit-image
   - pyyaml
