@@ -1,0 +1,48 @@
+model_path: PATH_TO_BEST_CHECKPOINT
+model:
+  name: ResidualUNetSE3D
+  # number of input channels to the model
+  in_channels: 1
+  # number of output channels
+  out_channels: 2
+  # determines the order of operators in a single layer (crg - Conv3d+ReLU+GroupNorm)
+  layer_order: gcr
+  # initial number of feature maps
+  f_maps: [ 32, 64, 128, 256 ]
+  # number of groups in the groupnorm
+  num_groups: 8
+  # apply element-wise nn.Sigmoid after the final 1x1x1 convolution, otherwise apply nn.Softmax
+  final_sigmoid: false
+  # if True applies the final normalization layer (sigmoid or softmax), otherwise the networks returns the output from the final convolution layer; use False for regression problems, e.g. de-noising
+  is_segmentation: true
+predictor:
+  name: 'StandardPredictor'
+  # save the output segmentation instead of probability maps, i.e. apply argmax to the output
+  save_segmentation: true
+loaders:
+  # class of the dataset
+  dataset: VGDataset
+  # save predictions to output_dir
+  output_dir: PATH_TO_OUTPUT_DIR
+  # batch dimension; if number of GPUs is N > 1, then a batch_size of N * batch_size will automatically be taken for DataParallel
+  batch_size: 1
+  # how many subprocesses to use for data loading
+  num_workers: 1
+  # test loaders configuration
+  test:
+    file_paths:
+      - PATH_TO_TEST_DIR
+
+    slice_builder:
+      name: SliceBuilder
+      patch_shape: [ 128, 128, 128 ]
+      stride_shape: [ 128, 128, 128 ]
+      # halo around each patch
+      halo_shape: [ 16, 16, 16 ]
+
+
+    transformer:
+      raw:
+        - name: Standardize
+        - name: ToTensor
+          expand_dims: true
