@@ -26,11 +26,16 @@ The 2D U-Net itself uses the standard 2D convolutional layers instead of 3D conv
 
 ### Generating Training Data using Hexagon VGSTUDIO MAX
 1. Label your data using the segmentation tools provided in Hexagon VGSTUDIO MAX
+
 ![Rendering of segmented data](resources/3d_segmentation.png)
+
 2. Export the labeled data for deep learning via the scene tree
-![Export via scene tree](resources/Export_deep_learning_data.png)
+
+![Export via scene tree](resources/export_deep_learning_data.png)
+
 3. Select all Regions of Interest (ROIs) to be used as labeled data
-![Select ROIs for labeling](resources/Export_deep_learning_data_2.png)
+
+![Select ROIs for labeling](resources/export_deep_learning_data_2.png)
 
 ### HDF5 data
 The input data should be stored in HDF5 files. The HDF5 files for training should contain two datasets: `raw` and `label`. Optionally, when training with `PixelWiseCrossEntropyLoss` one should provide `weight` dataset.
